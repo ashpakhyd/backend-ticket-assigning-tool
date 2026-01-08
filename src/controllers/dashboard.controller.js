@@ -120,3 +120,15 @@ exports.technicianRatings = async (req, res) => {
 
   res.json(data);
 };
+
+/**
+ * ADMIN → Get all technicians
+ */
+exports.getTechnicians = async (req, res) => {
+  const technicians = await User.find(
+    { role: "TECHNICIAN", isActive: true },
+    { name: 1, email: 1, phone: 1, isActive: 1 }
+  );
+
+  res.json(technicians);
+};

@@ -32,4 +32,11 @@ router.get(
   ctrl.technicianRatings
 );
 
+router.get(
+  "/admin/technicians",
+  auth,
+  role("ADMIN"),
+  ctrl.getTechnicians
+);
+
 module.exports = router;
