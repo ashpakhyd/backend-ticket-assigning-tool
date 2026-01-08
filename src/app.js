@@ -45,7 +45,7 @@ app.use("/uploads", express.static("uploads"));
    HEALTH CHECK (OPTIONAL)
 ===================== */
 app.get("/", (req, res) => {
-  res.send("API is running");
+  res.send("API is running, Its Live-Use this URL in your front end project");
 });
 
 module.exports = app;
