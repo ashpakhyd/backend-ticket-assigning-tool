@@ -6,7 +6,18 @@ const { notifyUser } = require("../services/notification.service");
  * ADMIN / CUSTOMER → Create Ticket
  */
 exports.createTicket = async (req, res) => {
-  const { title, description, priority, serviceType, customerId } = req.body;
+  const { 
+    title, 
+    description, 
+    priority, 
+    serviceType, 
+    customerId, 
+    appliance, 
+    issue, 
+    address, 
+    timeSlot, 
+    urgency 
+  } = req.body;
 
   const ticket = await Ticket.create({
     title,
@@ -14,7 +25,12 @@ exports.createTicket = async (req, res) => {
     priority,
     serviceType,
     customer: customerId || req.user._id,
-    createdBy: req.user._id
+    createdBy: req.user._id,
+    appliance,
+    issue,
+    address,
+    timeSlot,
+    urgency
   });
 
   // 🔔 Notify customer
