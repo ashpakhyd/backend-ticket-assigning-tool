@@ -82,3 +82,16 @@ exports.getComments = async (req, res) => {
 
   res.json(comments);
 };
+
+/**
+ * DELETE COMMENT (Admin only)
+ */
+exports.deleteComment = async (req, res) => {
+  const comment = await Comment.findById(req.params.commentId);
+  if (!comment) {
+    return res.status(404).json({ message: "Comment not found" });
+  }
+
+  await Comment.findByIdAndDelete(req.params.commentId);
+  res.json({ message: "Comment deleted" });
+};
