@@ -68,4 +68,13 @@ router.get(
   ctrl.getCustomerTickets
 );
 
+/**
+ * GET SINGLE TICKET
+ */
+router.get(
+  "/:id",
+  auth,
+  ctrl.getSingleTicket
+);
+
 module.exports = router;

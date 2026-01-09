@@ -162,3 +162,26 @@ exports.updateStatus = async (req, res) => {
 
   res.json(ticket);
 };
+
+/**
+ * GET SINGLE TICKET
+ */
+exports.getSingleTicket = async (req, res) => {
+  const ticket = await Ticket.findById(req.params.id)
+    .populate("customer technician", "name phone role");
+
+  if (!ticket) {
+    return res.status(404).json({ message: "Ticket not found" });
+  }
+
+  // Access control
+  if (req.user.role === "CUSTOMER" && String(ticket.customer._id) !== String(req.user._id)) {
+    return res.status(403).json({ message: "Not your ticket" });
+  }
+
+  if (req.user.role === "TECHNICIAN" && String(ticket.technician?._id) !== String(req.user._id)) {
+    return res.status(403).json({ message: "Not your ticket" });
+  }
+
+  res.json(ticket);
+};
