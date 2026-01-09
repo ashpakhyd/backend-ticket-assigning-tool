@@ -38,4 +38,14 @@ router.get(
   ctrl.getMyRatings
 );
 
+/**
+ * CUSTOMER → View own given ratings
+ */
+router.get(
+  "/customer/ratings",
+  auth,
+  permit(P.VIEW_OWN_TICKETS),
+  ctrl.getMyGivenRatings
+);
+
 module.exports = router;

@@ -59,3 +59,15 @@ exports.getMyRatings = async (req, res) => {
 
   res.json(ratings);
 };
+
+/**
+ * CUSTOMER → View own given ratings
+ */
+exports.getMyGivenRatings = async (req, res) => {
+  const ratings = await Rating.find({ customer: req.user._id })
+    .populate("technician", "name phone")
+    .populate("ticket", "title")
+    .sort({ createdAt: -1 });
+
+  res.json(ratings);
+};
