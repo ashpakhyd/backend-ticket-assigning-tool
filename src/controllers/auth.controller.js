@@ -63,3 +63,25 @@ exports.verifyOtp = async (req, res) => {
 exports.profile = async (req, res) => {
   res.json(req.user);
 };
+
+exports.forgotPassword = async (req, res) => {
+  const { phone } = req.body;
+
+  const user = await User.findOne({ phone });
+  if (!user) return res.status(404).json({ message: "User not found" });
+
+  await otpService.sendOtp(phone);
+  res.json({ message: "Password reset OTP sent" });
+};
+
+exports.resetPassword = async (req, res) => {
+  const { phone, otp, newPassword } = req.body;
+
+  const valid = await otpService.verifyOtp(phone, otp);
+  if (!valid) return res.status(400).json({ message: "Invalid OTP" });
+
+  const hashedPassword = await hashPassword(newPassword);
+  await User.findOneAndUpdate({ phone }, { password: hashedPassword });
+
+  res.json({ message: "Password reset successful" });
+};
