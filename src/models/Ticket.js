@@ -32,7 +32,8 @@ const ticketSchema = new mongoose.Schema({
   issue: { type: String, required: true },
   address: { type: String, required: true },
   timeSlot: { type: String, enum: ["morning", "afternoon", "evening"], required: true },
-  urgency: { type: String, enum: ["normal", "urgent"], default: "normal" }
+  urgency: { type: String, enum: ["normal", "urgent"], default: "normal" },
+  serviceCategory: { type: String, required: true }
 }, { timestamps: true });
 
 module.exports = mongoose.model("Ticket", ticketSchema);

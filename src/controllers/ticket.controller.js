@@ -16,7 +16,8 @@ exports.createTicket = async (req, res) => {
     issue, 
     address, 
     timeSlot, 
-    urgency 
+    urgency,
+    serviceCategory 
   } = req.body;
 
   const ticket = await Ticket.create({
@@ -30,7 +31,8 @@ exports.createTicket = async (req, res) => {
     issue,
     address,
     timeSlot,
-    urgency
+    urgency,
+    serviceCategory
   });
 
   // 🔔 Notify customer
