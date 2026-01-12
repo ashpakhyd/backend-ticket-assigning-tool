@@ -35,6 +35,7 @@ app.use("/api/tickets", require("./routes/comment.routes"));
 app.use("/api/notifications", require("./routes/notification.routes"));
 app.use("/api", require("./routes/rating.routes"));
 app.use("/api", require("./routes/dashboard.routes"));
+app.use("/api/addresses", require("./routes/address.routes"));
 
 /* =====================
    STATIC FILES
