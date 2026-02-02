@@ -1,11 +1,15 @@
 const router = require("express").Router();
 
 const auth = require("../middlewares/auth.middleware");
+const validate = require("../middlewares/validate");
 const ctrl = require("../controllers/ticket.controller");
 
 // 🔐 RBAC
 const permit = require("../middlewares/permission.middleware");
 const P = require("../constants/permissions");
+
+// Validators
+const { createTicketSchema, updateStatusSchema, assignTechnicianSchema } = require("../validators/ticket.validator");
 
 /**
  * CREATE TICKET
@@ -15,6 +19,7 @@ router.post(
   "/",
   auth,
   permit(P.CREATE_TICKET),
+  validate(createTicketSchema),
   ctrl.createTicket
 );
 
@@ -25,6 +30,7 @@ router.patch(
   "/:id/assign",
   auth,
   permit(P.ASSIGN_TECHNICIAN),
+  validate(assignTechnicianSchema),
   ctrl.assignTechnician
 );
 
@@ -35,6 +41,7 @@ router.patch(
   "/:id/status",
   auth,
   permit(P.UPDATE_STATUS),
+  validate(updateStatusSchema),
   ctrl.updateStatus
 );
 
