@@ -17,8 +17,8 @@ exports.createTicketSchema = z.object({
     name: z.string(),
     url: z.string(),
     type: z.string()
-  })).optional(),
-  timeSlot: z.enum(["morning", "afternoon", "evening"], "Time slot is required"),
+  })).optional().default([]),
+  timeSlot: z.enum(["morning", "afternoon", "evening"]),
   urgency: z.enum(["normal", "urgent"]).optional(),
   serviceCategory: z.string().min(1, "Service category is required")
 });

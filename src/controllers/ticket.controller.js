@@ -46,11 +46,10 @@ exports.createTicket = async (req, res) => {
       timeSlot,
       urgency,
       serviceCategory,
-      // New fields
       houseDetails,
       latitude,
       longitude,
-      attachments
+      attachments: attachments || []
     });
 
     // 🔔 Notify customer

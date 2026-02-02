@@ -34,11 +34,14 @@ const ticketSchema = new mongoose.Schema({
   houseDetails: { type: String, required: true },
   latitude: { type: Number },
   longitude: { type: Number },
-  attachments: [{
-    name: String,
-    url: String,
-    type: String
-  }],
+  attachments: {
+    type: [{
+      name: String,
+      url: String,
+      type: String
+    }],
+    default: []
+  },
   timeSlot: { type: String, enum: ["morning", "afternoon", "evening"], required: true },
   urgency: { type: String, enum: ["normal", "urgent"], default: "normal" },
   serviceCategory: { type: String, required: true }
