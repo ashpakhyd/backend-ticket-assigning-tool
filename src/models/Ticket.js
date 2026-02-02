@@ -1,6 +1,11 @@
 // models/Ticket.js
 const mongoose = require("mongoose");
 
+// Clear existing model if it exists
+if (mongoose.models.Ticket) {
+  delete mongoose.models.Ticket;
+}
+
 const ticketSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: String,
@@ -36,9 +41,9 @@ const ticketSchema = new mongoose.Schema({
   longitude: { type: Number },
   attachments: {
     type: [{
-      name: String,
-      url: String,
-      type: String
+      name: { type: String },
+      url: { type: String },
+      type: { type: String }
     }],
     default: []
   },

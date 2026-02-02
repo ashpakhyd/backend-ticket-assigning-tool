@@ -13,11 +13,11 @@ exports.createTicketSchema = z.object({
   houseDetails: z.string().min(1, "House details are required"),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
-  attachments: z.array(z.object({
+  attachments: z.union([z.string(), z.array(z.object({
     name: z.string(),
     url: z.string(),
     type: z.string()
-  })).optional().default([]),
+  }))]).optional(),
   timeSlot: z.enum(["morning", "afternoon", "evening"]),
   urgency: z.enum(["normal", "urgent"]).optional(),
   serviceCategory: z.string().min(1, "Service category is required")

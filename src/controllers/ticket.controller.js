@@ -19,21 +19,34 @@ exports.createTicket = async (req, res) => {
       timeSlot, 
       urgency,
       serviceCategory,
-      // New fields
       houseDetails,
       latitude,
       longitude,
       attachments
     } = req.body;
 
-    // Validate required fields
+    // Parse attachments properly
+    let parsedAttachments = [];
+    if (attachments) {
+      if (typeof attachments === 'string') {
+        try {
+          parsedAttachments = JSON.parse(attachments);
+        } catch (e) {
+          console.error('JSON parse error:', e);
+          parsedAttachments = [];
+        }
+      } else if (Array.isArray(attachments)) {
+        parsedAttachments = attachments;
+      }
+    }
+
     if (!title || !appliance || !issue || !address || !timeSlot || !serviceCategory || !houseDetails) {
       return res.status(400).json({ 
         message: "Missing required fields: title, appliance, issue, address, timeSlot, serviceCategory, houseDetails" 
       });
     }
 
-    const ticket = await Ticket.create({
+    const ticketData = {
       title,
       description,
       priority,
@@ -49,8 +62,12 @@ exports.createTicket = async (req, res) => {
       houseDetails,
       latitude,
       longitude,
-      attachments: attachments || []
-    });
+      attachments: parsedAttachments
+    };
+
+    console.log('Creating ticket with data:', JSON.stringify(ticketData, null, 2));
+
+    const ticket = await Ticket.create(ticketData);
 
     // 🔔 Notify customer
     await notifyUser({
