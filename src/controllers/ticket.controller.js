@@ -9,30 +9,38 @@ exports.createTicket = async (req, res) => {
   const { 
     title, 
     description, 
+    address,
+    houseDetails,
+    latitude,
+    longitude,
+    attachments,
     priority, 
     serviceType, 
-    customerId, 
-    appliance, 
-    issue, 
-    address, 
-    timeSlot, 
     urgency,
-    serviceCategory 
+    timeSlot,
+    serviceCategory,
+    appliance,
+    issue,
+    customerId
   } = req.body;
 
   const ticket = await Ticket.create({
     title,
     description,
+    address,
+    houseDetails,
+    latitude,
+    longitude,
+    attachments,
     priority,
     serviceType,
-    customer: customerId || req.user._id,
-    createdBy: req.user._id,
+    urgency,
+    timeSlot,
+    serviceCategory,
     appliance,
     issue,
-    address,
-    timeSlot,
-    urgency,
-    serviceCategory
+    customer: customerId || req.user._id,
+    createdBy: req.user._id
   });
 
   // 🔔 Notify customer
@@ -93,9 +101,10 @@ exports.assignTechnician = async (req, res) => {
 exports.getAllTickets = async (req, res) => {
   const tickets = await Ticket.find()
     .populate("customer technician", "name phone role")
-    .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 })
+    .select('title status priority address latitude longitude attachments createdAt');
 
-  res.json(tickets);
+  res.json({ tickets });
 };
 
 /**
@@ -170,7 +179,8 @@ exports.updateStatus = async (req, res) => {
  */
 exports.getSingleTicket = async (req, res) => {
   const ticket = await Ticket.findById(req.params.id)
-    .populate("customer technician", "name phone role");
+    .populate("customer technician", "name phone role")
+    .select('title description address houseDetails latitude longitude attachments status priority createdAt updatedAt');
 
   if (!ticket) {
     return res.status(404).json({ message: "Ticket not found" });

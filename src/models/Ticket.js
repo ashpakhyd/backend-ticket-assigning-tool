@@ -31,6 +31,14 @@ const ticketSchema = new mongoose.Schema({
   appliance: { type: String, required: true },
   issue: { type: String, required: true },
   address: { type: String, required: true },
+  houseDetails: { type: String },
+  latitude: { type: Number },
+  longitude: { type: Number },
+  attachments: [{
+    name: String,
+    url: String,
+    type: String
+  }],
   timeSlot: { type: String, enum: ["morning", "afternoon", "evening"], required: true },
   urgency: { type: String, enum: ["normal", "urgent"], default: "normal" },
   serviceCategory: { type: String, required: true }
