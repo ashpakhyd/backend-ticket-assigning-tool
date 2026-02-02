@@ -2,8 +2,6 @@ const router = require("express").Router();
 
 const auth = require("../middlewares/auth.middleware");
 const ctrl = require("../controllers/ticket.controller");
-const { createTicketValidator } = require("../validators/ticket.validator");
-const { validate } = require("../middlewares/validate");
 
 // 🔐 RBAC
 const permit = require("../middlewares/permission.middleware");
@@ -17,8 +15,6 @@ router.post(
   "/",
   auth,
   permit(P.CREATE_TICKET),
-  createTicketValidator,
-  validate,
   ctrl.createTicket
 );
 
