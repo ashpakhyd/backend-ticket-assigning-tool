@@ -24,11 +24,22 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  const { phone, password } = req.body;
+  const { phone, password, appType } = req.body;
 
   const user = await User.findOne({ phone });
   if (!user || !user.isActive)
     return res.status(401).json({ message: "Invalid user" });
+
+  // Role-based app access check
+  const roleAppMap = {
+    'ADMIN': 'admin',
+    'TECHNICIAN': 'technician', 
+    'CUSTOMER': 'customer'
+  };
+  
+  if (appType && roleAppMap[user.role] !== appType) {
+    return res.status(403).json({ message: "Access denied for this app" });
+  }
 
   if (user.password) {
     const match = await comparePassword(password, user.password);
@@ -36,7 +47,7 @@ exports.login = async (req, res) => {
   }
 
   const token = generateToken(user);
-  res.json({ token });
+  res.json({ token, role: user.role });
 };
 
 exports.sendOtp = async (req, res) => {
@@ -45,7 +56,7 @@ exports.sendOtp = async (req, res) => {
 };
 
 exports.verifyOtp = async (req, res) => {
-  const { phone, otp } = req.body;
+  const { phone, otp, appType } = req.body;
 
   const valid = await otpService.verifyOtp(phone, otp);
   if (!valid) return res.status(400).json({ message: "Invalid OTP" });
@@ -56,8 +67,19 @@ exports.verifyOtp = async (req, res) => {
     { new: true }
   );
 
+  // Role-based app access check
+  const roleAppMap = {
+    'ADMIN': 'admin',
+    'TECHNICIAN': 'technician',
+    'CUSTOMER': 'customer'
+  };
+  
+  if (appType && roleAppMap[user.role] !== appType) {
+    return res.status(403).json({ message: "Access denied for this app" });
+  }
+
   const token = generateToken(user);
-  res.json({ token });
+  res.json({ token, role: user.role });
 };
 
 exports.profile = async (req, res) => {
