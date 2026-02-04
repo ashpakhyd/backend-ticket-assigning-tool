@@ -202,7 +202,7 @@ exports.getCustomerTickets = async (req, res) => {
  */
 exports.updateStatus = async (req, res) => {
   try {
-    const { status, otp, finalOTP } = req.body;
+    const { status, customerOtp, finalOTP } = req.body;
 
     // 1️⃣ Fetch ticket
     const ticket = await Ticket.findById(req.params.id);
@@ -219,10 +219,10 @@ exports.updateStatus = async (req, res) => {
 
     // 3️⃣ OTP VALIDATION for IN_PROGRESS status
     if (status === "IN_PROGRESS") {
-      if (!otp) {
+      if (!customerOtp) {
         return res.status(400).json({ message: "OTP is required to start work" });
       }
-      if (ticket.otp !== otp) {
+      if (ticket.otp !== customerOtp) {
         return res.status(400).json({ message: "Invalid OTP" });
       }
       // Generate finalOTP for completion

@@ -41,7 +41,6 @@ router.patch(
   "/:id/status",
   auth,
   permit(P.UPDATE_STATUS),
-  validate(updateStatusSchema),
   ctrl.updateStatus
 );
 
