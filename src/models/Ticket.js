@@ -5,6 +5,9 @@ const mongoose = require("mongoose");
 if (mongoose.models.Ticket) {
   delete mongoose.models.Ticket;
 }
+if (mongoose.connection.models.Ticket) {
+  delete mongoose.connection.models.Ticket;
+}
 
 const ticketSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -49,7 +52,16 @@ const ticketSchema = new mongoose.Schema({
   },
   timeSlot: { type: String, enum: ["morning", "afternoon", "evening"], required: true },
   urgency: { type: String, enum: ["normal", "urgent"], default: "normal" },
-  serviceCategory: { type: String, required: true }
+  serviceCategory: { type: String, required: true },
+  otp: {
+    type: String,
+    required: true,
+    length: 6
+  },
+  finalOTP: {
+    type: String,
+    length: 6
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model("Ticket", ticketSchema);

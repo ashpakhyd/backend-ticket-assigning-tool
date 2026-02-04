@@ -2,6 +2,11 @@ const Ticket = require("../models/Ticket");
 const User = require("../models/User");
 const { notifyUser } = require("../services/notification.service");
 
+// OTP generation utility
+const generateOtp = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
 /**
  * ADMIN / CUSTOMER → Create Ticket
  */
@@ -62,7 +67,9 @@ exports.createTicket = async (req, res) => {
       houseDetails,
       latitude,
       longitude,
-      attachments: parsedAttachments
+      attachments: parsedAttachments,
+      otp: generateOtp(),
+      status: "NEW"
     };
 
     console.log('Creating ticket with data:', JSON.stringify(ticketData, null, 2));
