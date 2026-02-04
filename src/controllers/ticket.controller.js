@@ -272,9 +272,30 @@ exports.getSingleTicket = async (req, res) => {
     if (req.user.role === "TECHNICIAN") {
       const ticketObj = ticket.toObject();
       delete ticketObj.otp;
+      delete ticketObj.finalOTP;
       return res.json(ticketObj);
     }
 
+    // Customer OTP logic based on status
+    if (req.user.role === "CUSTOMER") {
+      const ticketObj = ticket.toObject();
+      
+      if (ticket.status === "ASSIGNED") {
+        // Show OTP for technician
+        delete ticketObj.finalOTP;
+      } else if (ticket.status === "IN_PROGRESS" || ticket.status === "COMPLETED") {
+        // Show finalOTP
+        delete ticketObj.otp;
+      } else {
+        // NEW/CLOSED - Hide both OTPs
+        delete ticketObj.otp;
+        delete ticketObj.finalOTP;
+      }
+      
+      return res.json(ticketObj);
+    }
+
+    // Admin gets everything
     res.json(ticket);
   } catch (error) {
     console.error("Get single ticket error:", error);
