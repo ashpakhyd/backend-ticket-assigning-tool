@@ -55,7 +55,9 @@ const ticketSchema = new mongoose.Schema({
   serviceCategory: { type: String, required: true },
   otp: {
     type: String,
-    required: true,
+    required: function() {
+      return this.status === 'NEW';
+    },
     length: 6
   },
   finalOTP: {

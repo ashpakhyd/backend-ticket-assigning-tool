@@ -24,7 +24,8 @@ exports.createTicketSchema = z.object({
 });
 
 exports.updateStatusSchema = z.object({
-  status: z.enum(["NEW", "ASSIGNED", "IN_PROGRESS", "COMPLETED", "CLOSED"])
+  status: z.enum(["NEW", "ASSIGNED", "IN_PROGRESS", "COMPLETED", "CLOSED"]),
+  otp: z.string().optional()
 });
 
 exports.assignTechnicianSchema = z.object({

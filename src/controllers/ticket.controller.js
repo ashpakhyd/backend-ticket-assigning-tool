@@ -114,21 +114,29 @@ exports.assignTechnician = async (req, res) => {
       return res.status(404).json({ message: "Ticket not found" });
     }
 
-    // 3️⃣ Assign
-    ticket.technician = technicianId;
-    ticket.status = "ASSIGNED";
-    await ticket.save();
+    // 3️⃣ Assign (OTP not required for assignment)
+    const updateData = {
+      technician: technicianId,
+      status: "ASSIGNED"
+    };
+    
+    // Use findByIdAndUpdate to bypass validation for OTP
+    const updatedTicket = await Ticket.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true, runValidators: false }
+    );
 
     // 4️⃣ 🔔 Notify technician
     await notifyUser({
       userId: technicianId,
-      ticketId: ticket._id,
+      ticketId: updatedTicket._id,
       title: "New Job Assigned",
-      message: `You have been assigned ticket "${ticket.title}"`,
+      message: `You have been assigned ticket "${updatedTicket.title}"`,
       type: "TICKET_ASSIGNED"
     });
 
-    res.json(ticket);
+    res.json(updatedTicket);
   } catch (error) {
     console.error("Assign technician error:", error);
     res.status(500).json({ message: "Failed to assign technician", error: error.message });
@@ -187,7 +195,7 @@ exports.getCustomerTickets = async (req, res) => {
  */
 exports.updateStatus = async (req, res) => {
   try {
-    const { status } = req.body;
+    const { status, otp } = req.body;
 
     // 1️⃣ Fetch ticket
     const ticket = await Ticket.findById(req.params.id);
@@ -202,11 +210,21 @@ exports.updateStatus = async (req, res) => {
       }
     }
 
-    // 3️⃣ Update status
+    // 3️⃣ OTP VALIDATION for IN_PROGRESS status
+    if (status === "IN_PROGRESS") {
+      if (!otp) {
+        return res.status(400).json({ message: "OTP is required to start work" });
+      }
+      if (ticket.otp !== otp) {
+        return res.status(400).json({ message: "Invalid OTP" });
+      }
+    }
+
+    // 4️⃣ Update status
     ticket.status = status;
     await ticket.save();
 
-    // 4️⃣ 🔔 Notify customer
+    // 5️⃣ 🔔 Notify customer
     await notifyUser({
       userId: ticket.customer,
       ticketId: ticket._id,
