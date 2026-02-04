@@ -261,6 +261,13 @@ exports.getSingleTicket = async (req, res) => {
       return res.status(403).json({ message: "Not your ticket" });
     }
 
+    // Hide OTP from technician
+    if (req.user.role === "TECHNICIAN") {
+      const ticketObj = ticket.toObject();
+      delete ticketObj.otp;
+      return res.json(ticketObj);
+    }
+
     res.json(ticket);
   } catch (error) {
     console.error("Get single ticket error:", error);
