@@ -5,18 +5,37 @@ const { generateToken } = require("../services/token.service");
 const otpService = require("../services/otp.service");
 
 exports.register = async (req, res) => {
-  const { name, phone, email, password, role } = req.body;
+  const { 
+    name, phone, email, password, role,
+    experience, skills, serviceAreas, certification, 
+    address, idType, idNumber, profilePhoto, idDocument 
+  } = req.body;
 
   const exists = await User.findOne({ phone });
   if (exists) return res.status(400).json({ message: "User already exists" });
 
-  const user = await User.create({
+  const userData = {
     name,
     phone,
     email,
     role,
     password: password ? await hashPassword(password) : null
-  });
+  };
+
+  // Add technician specific fields if role is TECHNICIAN
+  if (role === "TECHNICIAN") {
+    userData.experience = experience;
+    userData.skills = skills;
+    userData.serviceAreas = serviceAreas;
+    userData.certification = certification;
+    userData.address = address;
+    userData.idType = idType;
+    userData.idNumber = idNumber;
+    userData.profilePhoto = profilePhoto;
+    userData.idDocument = idDocument;
+  }
+
+  const user = await User.create(userData);
 
   await otpService.sendOtp(phone);
 

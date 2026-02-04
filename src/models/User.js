@@ -20,6 +20,17 @@ const userSchema = new mongoose.Schema({
 
   isVerified: { type: Boolean, default: false },
 
+  // Technician specific fields
+  experience: { type: String },
+  skills: [{ type: String }],
+  serviceAreas: { type: String },
+  certification: { type: String },
+  address: { type: String },
+  idType: { type: String },
+  idNumber: { type: String },
+  profilePhoto: { type: String },
+  idDocument: { type: String }
+
 }, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);
