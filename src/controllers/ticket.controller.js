@@ -202,7 +202,7 @@ exports.getCustomerTickets = async (req, res) => {
  */
 exports.updateStatus = async (req, res) => {
   try {
-    const { status, otp } = req.body;
+    const { status, otp, finalOTP } = req.body;
 
     // 1️⃣ Fetch ticket
     const ticket = await Ticket.findById(req.params.id);
@@ -225,13 +225,25 @@ exports.updateStatus = async (req, res) => {
       if (ticket.otp !== otp) {
         return res.status(400).json({ message: "Invalid OTP" });
       }
+      // Generate finalOTP for completion
+      ticket.finalOTP = generateOtp();
     }
 
-    // 4️⃣ Update status
+    // 4️⃣ Final OTP VALIDATION for COMPLETED status
+    if (status === "COMPLETED") {
+      if (!finalOTP) {
+        return res.status(400).json({ message: "Final OTP is required to complete work" });
+      }
+      if (ticket.finalOTP !== finalOTP) {
+        return res.status(400).json({ message: "Invalid final OTP" });
+      }
+    }
+
+    // 5️⃣ Update status
     ticket.status = status;
     await ticket.save();
 
-    // 5️⃣ 🔔 Notify customer
+    // 6️⃣ 🔔 Notify customer
     await notifyUser({
       userId: ticket.customer,
       ticketId: ticket._id,
