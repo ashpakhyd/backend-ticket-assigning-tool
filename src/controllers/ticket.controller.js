@@ -183,7 +183,14 @@ exports.getCustomerTickets = async (req, res) => {
     const tickets = await Ticket.find({ customer: req.user._id })
       .sort({ createdAt: -1 });
 
-    res.json(tickets);
+    // Hide OTP from customer in list view
+    const customerResponse = tickets.map(ticket => {
+      const ticketObj = ticket.toObject();
+      delete ticketObj.otp;
+      return ticketObj;
+    });
+
+    res.json(customerResponse);
   } catch (error) {
     console.error("Get customer tickets error:", error);
     res.status(500).json({ message: "Failed to fetch tickets", error: error.message });
