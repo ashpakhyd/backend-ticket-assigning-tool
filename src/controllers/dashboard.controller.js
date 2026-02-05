@@ -125,10 +125,38 @@ exports.technicianRatings = async (req, res) => {
  * ADMIN → Get all technicians
  */
 exports.getTechnicians = async (req, res) => {
+  const Otp = require("../models/Otp");
+  
   const technicians = await User.find(
-    { role: "TECHNICIAN", isActive: true },
-    { name: 1, email: 1, phone: 1, isActive: 1 }
+    { role: "TECHNICIAN" },
+    { 
+      name: 1, 
+      email: 1, 
+      phone: 1, 
+      isActive: 1,
+      isVerified: 1,
+      experience: 1,
+      skills: 1,
+      serviceAreas: 1,
+      certification: 1,
+      address: 1,
+      idType: 1,
+      idNumber: 1,
+      profilePhoto: 1,
+      idDocument: 1
+    }
   );
 
-  res.json(technicians);
+  // Add OTP for each technician
+  const techniciansWithOtp = await Promise.all(
+    technicians.map(async (tech) => {
+      const otpRecord = await Otp.findOne({ phone: tech.phone });
+      return {
+        ...tech.toObject(),
+        otp: otpRecord ? otpRecord.otp : null
+      };
+    })
+  );
+
+  res.json(techniciansWithOtp);
 };

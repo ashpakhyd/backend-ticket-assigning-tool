@@ -265,7 +265,8 @@ exports.updateStatus = async (req, res) => {
 exports.getSingleTicket = async (req, res) => {
   try {
     const ticket = await Ticket.findById(req.params.id)
-      .populate("customer technician", "name phone role");
+      .populate("customer", "name phone role")
+      .populate("technician", "name phone role experience skills serviceAreas certification address profilePhoto");
 
     if (!ticket) {
       return res.status(404).json({ message: "Ticket not found" });
