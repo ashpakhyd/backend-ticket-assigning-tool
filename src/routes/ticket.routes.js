@@ -83,4 +83,13 @@ router.get(
   ctrl.getSingleTicket
 );
 
+/**
+ * ADMIN / CUSTOMER → Delete ticket
+ */
+router.delete(
+  "/:id",
+  auth,
+  ctrl.deleteTicket
+);
+
 module.exports = router;

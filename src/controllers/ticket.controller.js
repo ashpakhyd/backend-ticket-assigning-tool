@@ -315,3 +315,28 @@ exports.getSingleTicket = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch ticket", error: error.message });
   }
 };
+
+/**
+ * ADMIN / CUSTOMER → Delete Ticket
+ */
+exports.deleteTicket = async (req, res) => {
+  try {
+    const ticket = await Ticket.findById(req.params.id);
+    
+    if (!ticket) {
+      return res.status(404).json({ message: "Ticket not found" });
+    }
+
+    // Access control: ADMIN can delete any, CUSTOMER only own
+    if (req.user.role === "CUSTOMER" && String(ticket.customer) !== String(req.user._id)) {
+      return res.status(403).json({ message: "Not your ticket" });
+    }
+
+    await Ticket.findByIdAndDelete(req.params.id);
+    
+    res.json({ message: "Ticket deleted successfully" });
+  } catch (error) {
+    console.error("Delete ticket error:", error);
+    res.status(500).json({ message: "Failed to delete ticket", error: error.message });
+  }
+};
