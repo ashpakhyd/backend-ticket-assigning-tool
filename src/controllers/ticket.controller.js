@@ -25,6 +25,7 @@ exports.createTicket = async (req, res) => {
       urgency,
       serviceCategory,
       houseDetails,
+      alternatePhone,
       latitude,
       longitude,
       attachments
@@ -65,6 +66,7 @@ exports.createTicket = async (req, res) => {
       urgency,
       serviceCategory,
       houseDetails,
+      alternatePhone,
       latitude,
       longitude,
       attachments: parsedAttachments,

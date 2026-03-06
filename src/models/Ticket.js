@@ -40,6 +40,7 @@ const ticketSchema = new mongoose.Schema({
   issue: { type: String, required: true },
   address: { type: String, required: true },
   houseDetails: { type: String, required: true },
+  alternatePhone: { type: String },
   latitude: { type: Number },
   longitude: { type: Number },
   attachments: {
