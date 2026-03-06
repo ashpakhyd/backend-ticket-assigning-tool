@@ -45,6 +45,11 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const { phone, password, appType } = req.body;
 
+  // Check if appType is provided
+  if (!appType) {
+    return res.status(400).json({ message: "appType is required" });
+  }
+
   const user = await User.findOne({ phone });
   if (!user || !user.isActive)
     return res.status(401).json({ message: "Invalid user" });
@@ -56,7 +61,7 @@ exports.login = async (req, res) => {
     'CUSTOMER': 'customer'
   };
   
-  if (appType && roleAppMap[user.role] !== appType) {
+  if (roleAppMap[user.role] !== appType) {
     return res.status(403).json({ message: "Access denied for this app" });
   }
 
