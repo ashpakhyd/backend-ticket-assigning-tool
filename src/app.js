@@ -42,6 +42,7 @@ app.use("/api/admin", require("./routes/admin.routes"));
    OFFER SYSTEM ROUTES
 ===================== */
 app.use("/api/admin/offers", require("./offers/routes/admin-offer.routes"));
+app.use("/api/offers", require("./offers/routes/customer-offer.routes"));
 
 /* =====================
    STATIC FILES

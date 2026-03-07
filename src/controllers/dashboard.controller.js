@@ -2,32 +2,68 @@
 const Ticket = require("../models/Ticket");
 const User = require("../models/User");
 const Rating = require("../models/Rating");
+const Offer = require("../offers/models/Offer");
+const OfferActivity = require("../offers/models/OfferActivity");
 
 /**
- * ADMIN → Main dashboard stats
+ * ADMIN → Main dashboard stats (Enhanced with Offers)
  */
 exports.getDashboardStats = async (req, res) => {
-  const [
-    totalTickets,
-    openTickets,
-    completedTickets,
-    technicians,
-    customers
-  ] = await Promise.all([
-    Ticket.countDocuments(),
-    Ticket.countDocuments({ status: { $ne: "CLOSED" } }),
-    Ticket.countDocuments({ status: "COMPLETED" }),
-    User.countDocuments({ role: "TECHNICIAN", isActive: true }),
-    User.countDocuments({ role: "CUSTOMER" })
-  ]);
+  try {
+    const [
+      totalTickets,
+      openTickets,
+      completedTickets,
+      technicians,
+      customers,
+      totalOffers,
+      activeOffers,
+      totalRedemptions,
+      recentRedemptions
+    ] = await Promise.all([
+      Ticket.countDocuments(),
+      Ticket.countDocuments({ status: { $ne: "CLOSED" } }),
+      Ticket.countDocuments({ status: "COMPLETED" }),
+      User.countDocuments({ role: "TECHNICIAN", isActive: true }),
+      User.countDocuments({ role: "CUSTOMER" }),
+      Offer.countDocuments(),
+      Offer.countDocuments({ status: "ACTIVE", isPublished: true }),
+      OfferActivity.countDocuments({ action: "REDEEM" }),
+      OfferActivity.find({ action: "REDEEM" })
+        .populate('customer', 'name phone')
+        .populate('offer', 'title')
+        .sort({ createdAt: -1 })
+        .limit(5)
+    ]);
 
-  res.json({
-    totalTickets,
-    openTickets,
-    completedTickets,
-    technicians,
-    customers
-  });
+    res.json({
+      tickets: {
+        total: totalTickets,
+        open: openTickets,
+        completed: completedTickets
+      },
+      users: {
+        technicians,
+        customers
+      },
+      offers: {
+        total: totalOffers,
+        active: activeOffers,
+        totalRedemptions
+      },
+      recentActivity: {
+        recentRedemptions: recentRedemptions.map(r => ({
+          customer: r.customer.name,
+          offer: r.offer.title,
+          redemptionCode: r.redemptionCode,
+          redeemedAt: r.createdAt
+        }))
+      }
+    });
+  } catch (error) {
+    console.error('Dashboard stats error:', error);
+    res.status(500).json({ message: 'Failed to get dashboard stats', error: error.message });
+  }
 };
 
 /**
