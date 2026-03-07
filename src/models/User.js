@@ -20,6 +20,9 @@ const userSchema = new mongoose.Schema({
 
   isVerified: { type: Boolean, default: false },
 
+  // FCM Token for push notifications
+  fcmToken: { type: String },
+
   // Technician specific fields
   experience: { type: String },
   skills: [{ type: String }],

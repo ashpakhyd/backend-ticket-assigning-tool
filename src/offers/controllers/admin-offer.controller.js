@@ -1,7 +1,7 @@
 const Offer = require('../models/Offer');
 const OfferActivity = require('../models/OfferActivity');
 const OfferService = require('../services/offer.service');
-const { notifyUser } = require('../../services/notification.service');
+const { notifyUser, notifyAllCustomers } = require('../../services/notification.service');
 
 /**
  * ADMIN → Create Offer
@@ -64,6 +64,18 @@ exports.createOffer = async (req, res) => {
     };
 
     const offer = await Offer.create(offerData);
+    
+    // Send notification to all customers about new offer
+    try {
+      await notifyAllCustomers({
+        title: "🎉 New Offer Available!",
+        message: `${title} - Don't miss out on this amazing deal!`,
+        offerId: offer._id
+      });
+    } catch (notificationError) {
+      console.error('Error sending offer notifications:', notificationError);
+      // Don't fail the offer creation if notification fails
+    }
     
     res.status(201).json({
       message: "Offer created successfully",

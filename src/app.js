@@ -30,6 +30,7 @@ mongoose
    ROUTES
 ===================== */
 app.use("/api/auth", require("./routes/auth.routes"));
+app.use("/api/fcm", require("./routes/fcm.routes"));
 app.use("/api/tickets", require("./routes/ticket.routes"));
 app.use("/api/tickets", require("./routes/comment.routes"));
 app.use("/api/notifications", require("./routes/notification.routes"));
