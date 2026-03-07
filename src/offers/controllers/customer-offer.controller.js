@@ -77,12 +77,16 @@ exports.browseOffers = async (req, res) => {
       const redeemedOfferIds = redeemedOffers.map(r => r.offer.toString());
       
       // Add redeemed status to offers
-      const offersWithStatus = offers.map(offer => ({
-        ...offer.toObject(),
-        isRedeemed: redeemedOfferIds.includes(offer._id.toString()),
-        discountPercentage: offer.discountPercentage,
-        isValid: offer.isValid
-      }));
+      const offersWithStatus = offers.map(offer => {
+        const offerObj = offer.toObject();
+        return {
+          ...offerObj,
+          images: offerObj.images || [],
+          isRedeemed: redeemedOfferIds.includes(offer._id.toString()),
+          discountPercentage: offer.discountPercentage,
+          isValid: offer.isValid
+        };
+      });
       
       const total = await Offer.countDocuments(query);
       
@@ -200,8 +204,10 @@ exports.getSingleOffer = async (req, res) => {
       // Continue without failing the request
     }
     
+    const offerObj = offer.toObject();
     const offerData = {
-      ...offer.toObject(),
+      ...offerObj,
+      images: offerObj.images || [],
       isRedeemed: !!redemption,
       redemptionDetails: redemption ? {
         redemptionCode: redemption.redemptionCode,
