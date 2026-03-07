@@ -39,6 +39,11 @@ app.use("/api/addresses", require("./routes/address.routes"));
 app.use("/api/admin", require("./routes/admin.routes"));
 
 /* =====================
+   OFFER SYSTEM ROUTES
+===================== */
+app.use("/api/admin/offers", require("./offers/routes/admin-offer.routes"));
+
+/* =====================
    STATIC FILES
 ===================== */
 app.use("/uploads", express.static("uploads"));
