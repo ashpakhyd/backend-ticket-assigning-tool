@@ -34,4 +34,44 @@ router.patch(
   ctrl.activateTechnician
 );
 
+/**
+ * ADMIN → Get all customers list
+ */
+router.get(
+  "/customers",
+  auth,
+  role("ADMIN"),
+  ctrl.getAllCustomers
+);
+
+/**
+ * ADMIN → Manually verify customer
+ */
+router.patch(
+  "/customers/:customerId/verify",
+  auth,
+  role("ADMIN"),
+  ctrl.verifyCustomer
+);
+
+/**
+ * ADMIN → Deactivate customer
+ */
+router.patch(
+  "/customers/:customerId/deactivate",
+  auth,
+  role("ADMIN"),
+  ctrl.deactivateCustomer
+);
+
+/**
+ * ADMIN → Activate customer
+ */
+router.patch(
+  "/customers/:customerId/activate",
+  auth,
+  role("ADMIN"),
+  ctrl.activateCustomer
+);
+
 module.exports = router;
