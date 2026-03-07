@@ -93,6 +93,9 @@ Thumbs.db
 *.swo
 *~
 
+# Firebase credentials
+firebase-admin-key.json.json
+
 # Build directories
 build/
 dist/
