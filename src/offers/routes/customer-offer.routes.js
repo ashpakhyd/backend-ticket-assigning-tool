@@ -15,6 +15,17 @@ router.get(
 );
 
 /**
+ * CUSTOMER → Get My Redemption Details by Code
+ * IMPORTANT: This route must come BEFORE /:id route
+ */
+router.get(
+  "/redemptions/:redemptionCode",
+  auth,
+  role("CUSTOMER"),
+  ctrl.getMyRedemption
+);
+
+/**
  * CUSTOMER → Get Single Offer Details
  */
 router.get(
@@ -32,16 +43,6 @@ router.post(
   auth,
   role("CUSTOMER"),
   ctrl.offerAction
-);
-
-/**
- * CUSTOMER → Get My Redemption Details by Code
- */
-router.get(
-  "/redemptions/:redemptionCode",
-  auth,
-  role("CUSTOMER"),
-  ctrl.getMyRedemption
 );
 
 module.exports = router;

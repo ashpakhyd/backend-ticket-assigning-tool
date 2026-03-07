@@ -155,6 +155,11 @@ exports.getSingleOffer = async (req, res) => {
   try {
     const { id } = req.params;
     
+    // Validate ObjectId
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid offer ID format" });
+    }
+    
     const offer = await Offer.findById(id)
       .select('-createdBy -analytics');
     
@@ -180,15 +185,20 @@ exports.getSingleOffer = async (req, res) => {
       action: 'REDEEM'
     });
     
-    // Track view
-    await OfferActivity.create({
-      customer: req.user._id,
-      offer: id,
-      action: 'VIEW'
-    });
-    
-    // Update offer view count
-    await OfferService.updateOfferAnalytics(id, 'VIEW');
+    // Track view (with error handling)
+    try {
+      await OfferActivity.create({
+        customer: req.user._id,
+        offer: id,
+        action: 'VIEW'
+      });
+      
+      // Update offer view count
+      await OfferService.updateOfferAnalytics(id, 'VIEW');
+    } catch (viewError) {
+      console.error('View tracking error:', viewError);
+      // Continue without failing the request
+    }
     
     const offerData = {
       ...offer.toObject(),
@@ -199,8 +209,8 @@ exports.getSingleOffer = async (req, res) => {
         status: redemption.status,
         expiresAt: redemption.expiresAt
       } : null,
-      discountPercentage: offer.discountPercentage,
-      isValid: offer.isValid
+      discountPercentage: offer.discountPercentage || 0,
+      isValid: offer.isValid || false
     };
     
     res.json({
@@ -220,6 +230,11 @@ exports.offerAction = async (req, res) => {
   try {
     const { id } = req.params;
     const { action } = req.body;
+    
+    // Validate ObjectId
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid offer ID format" });
+    }
     
     if (!action || !['REDEEM', 'LIKE', 'SHARE'].includes(action)) {
       return res.status(400).json({
@@ -257,16 +272,24 @@ exports.offerAction = async (req, res) => {
         action: 'REDEEM'
       });
       
-      // Update offer analytics
-      await OfferService.updateOfferAnalytics(id, 'REDEEM');
+      // Update offer analytics (with error handling)
+      try {
+        await OfferService.updateOfferAnalytics(id, 'REDEEM');
+      } catch (analyticsError) {
+        console.error('Analytics update error:', analyticsError);
+      }
       
-      // Notify customer
-      await notifyUser({
-        userId: req.user._id,
-        title: "Offer Redeemed",
-        message: `You have successfully redeemed "${offer.title}"`,
-        type: "OFFER_REDEEMED"
-      });
+      // Notify customer (with error handling)
+      try {
+        await notifyUser({
+          userId: req.user._id,
+          title: "Offer Redeemed",
+          message: `You have successfully redeemed "${offer.title}"`,
+          type: "OFFER_REDEEMED"
+        });
+      } catch (notifyError) {
+        console.error('Notification error:', notifyError);
+      }
       
       return res.json({
         message: "Offer redeemed successfully",
@@ -306,8 +329,12 @@ exports.offerAction = async (req, res) => {
         action: action
       });
       
-      // Update analytics
-      await OfferService.updateOfferAnalytics(id, action);
+      // Update analytics (with error handling)
+      try {
+        await OfferService.updateOfferAnalytics(id, action);
+      } catch (analyticsError) {
+        console.error('Analytics update error:', analyticsError);
+      }
       
       return res.json({
         message: `Offer ${action.toLowerCase()}d successfully`

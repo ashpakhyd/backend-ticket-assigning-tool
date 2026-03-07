@@ -123,23 +123,31 @@ class OfferService {
   
   // Update offer analytics
   static async updateOfferAnalytics(offerId, action) {
-    const updateField = {};
-    
-    switch(action) {
-      case 'VIEW':
-        updateField['analytics.views'] = 1;
-        break;
-      case 'REDEEM':
-        updateField['analytics.redemptions'] = 1;
-        updateField['currentRedemptions'] = 1;
-        break;
-      case 'SHARE':
-        updateField['analytics.shares'] = 1;
-        break;
-    }
-    
-    if (Object.keys(updateField).length > 0) {
-      await Offer.findByIdAndUpdate(offerId, { $inc: updateField });
+    try {
+      const updateField = {};
+      
+      switch(action) {
+        case 'VIEW':
+          updateField['analytics.views'] = 1;
+          break;
+        case 'REDEEM':
+          updateField['analytics.redemptions'] = 1;
+          updateField['currentRedemptions'] = 1;
+          break;
+        case 'SHARE':
+          updateField['analytics.shares'] = 1;
+          break;
+        case 'LIKE':
+          updateField['analytics.likes'] = 1;
+          break;
+      }
+      
+      if (Object.keys(updateField).length > 0) {
+        await Offer.findByIdAndUpdate(offerId, { $inc: updateField });
+      }
+    } catch (error) {
+      console.error('Update analytics error:', error);
+      // Don't throw error, just log it
     }
   }
   

@@ -58,7 +58,7 @@ offerActivitySchema.index({ redemptionCode: 1 });
 offerActivitySchema.index({ createdAt: -1 });
 
 // Generate unique redemption code
-offerActivitySchema.pre('save', function(next) {
+offerActivitySchema.pre('save', async function() {
   if (this.action === 'REDEEM' && !this.redemptionCode) {
     this.redemptionCode = 'OFF' + Math.floor(100000 + Math.random() * 900000).toString();
   }
@@ -67,8 +67,6 @@ offerActivitySchema.pre('save', function(next) {
   if (this.action === 'REDEEM' && !this.expiresAt) {
     this.expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
   }
-  
-  next();
 });
 
 // Virtual to check if redemption is expired
