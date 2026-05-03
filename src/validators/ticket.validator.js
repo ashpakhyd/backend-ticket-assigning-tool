@@ -10,7 +10,7 @@ exports.createTicketSchema = z.object({
   appliance: z.string().min(1, "Appliance is required"),
   issue: z.string().min(1, "Issue is required"),
   address: z.string().min(1, "Address is required"),
-  houseDetails: z.string().min(1, "House details are required"),
+  houseDetails: z.string().optional(),
   alternatePhone: z.string().optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
