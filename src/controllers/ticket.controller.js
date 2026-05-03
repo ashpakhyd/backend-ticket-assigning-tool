@@ -46,9 +46,9 @@ exports.createTicket = async (req, res) => {
       }
     }
 
-    if (!title || !appliance || !issue || !address || !timeSlot || !serviceCategory || !houseDetails) {
+    if (!title || !appliance || !issue || !address || !timeSlot || !serviceCategory) {
       return res.status(400).json({ 
-        message: "Missing required fields: title, appliance, issue, address, timeSlot, serviceCategory, houseDetails" 
+        message: "Missing required fields: title, appliance, issue, address, timeSlot, serviceCategory" 
       });
     }
 
