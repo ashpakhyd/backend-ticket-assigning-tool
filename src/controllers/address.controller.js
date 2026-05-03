@@ -13,17 +13,15 @@ exports.getAddresses = async (req, res) => {
  * POST /api/addresses - Add new address
  */
 exports.addAddress = async (req, res) => {
-  const { type, house, colony, area, city, district, state, country, pincode, isDefault } = req.body;
+  const { type, house, colony, area, city, district, state, country, pincode, latitude, longitude, isDefault } = req.body;
 
   const addressCount = await Address.countDocuments({ user: req.user._id });
   const isFirst = addressCount === 0;
 
-  // If setting as default, unset other defaults
   if (isDefault) {
     await Address.updateMany({ user: req.user._id }, { isDefault: false });
   }
 
-  // If first address, auto select it
   if (isFirst) {
     await Address.updateMany({ user: req.user._id }, { isSelected: false });
   }
@@ -39,8 +37,10 @@ exports.addAddress = async (req, res) => {
     state,
     country: country || "India",
     pincode,
+    latitude,
+    longitude,
     isDefault: isDefault || isFirst,
-    isSelected: isFirst // first address auto-selected
+    isSelected: isFirst
   });
 
   res.status(201).json(newAddress);
@@ -50,7 +50,7 @@ exports.addAddress = async (req, res) => {
  * PUT /api/addresses/:id - Update address
  */
 exports.updateAddress = async (req, res) => {
-  const { type, house, colony, area, city, district, state, country, pincode, isDefault } = req.body;
+  const { type, house, colony, area, city, district, state, country, pincode, latitude, longitude, isDefault } = req.body;
 
   const existing = await Address.findOne({ _id: req.params.id, user: req.user._id });
   if (!existing) return res.status(404).json({ message: "Address not found" });
@@ -61,7 +61,7 @@ exports.updateAddress = async (req, res) => {
 
   const updated = await Address.findByIdAndUpdate(
     req.params.id,
-    { type, house, colony, area, city, district, state, country, pincode, isDefault },
+    { type, house, colony, area, city, district, state, country, pincode, latitude, longitude, isDefault },
     { new: true }
   );
 
