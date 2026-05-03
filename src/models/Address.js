@@ -10,19 +10,21 @@ const addressSchema = new mongoose.Schema({
   type: {
     type: String,
     enum: ["Home", "Office", "Other"],
-    required: true
+    default: "Home"
   },
-  address: {
-    type: String,
-    required: true
-  },
-  houseNo: String,
+  house: String,
+  colony: String,
   area: String,
   city: String,
+  district: String,
   state: String,
+  country: { type: String, default: "India" },
   pincode: String,
-  landmark: String,
   isDefault: {
+    type: Boolean,
+    default: false
+  },
+  isSelected: {
     type: Boolean,
     default: false
   }

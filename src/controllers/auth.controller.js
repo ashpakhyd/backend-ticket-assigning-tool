@@ -1,5 +1,6 @@
 // controllers/auth.controller.js
 const User = require("../models/User");
+const Address = require("../models/Address");
 const { hashPassword, comparePassword } = require("../utils/password");
 const { generateToken } = require("../services/token.service");
 const otpService = require("../services/otp.service");
@@ -28,7 +29,6 @@ exports.register = async (req, res) => {
     userData.skills = skills;
     userData.serviceAreas = serviceAreas;
     userData.certification = certification;
-    userData.address = address;
     userData.idType = idType;
     userData.idNumber = idNumber;
     userData.profilePhoto = profilePhoto;
@@ -36,6 +36,22 @@ exports.register = async (req, res) => {
   }
 
   const user = await User.create(userData);
+
+  // Save address for CUSTOMER or TECHNICIAN
+  if (address && (role === "CUSTOMER" || role === "TECHNICIAN")) {
+    await Address.create({
+      user: user._id,
+      house: address.house,
+      colony: address.colony,
+      area: address.area,
+      city: address.city,
+      district: address.district,
+      state: address.state,
+      country: address.country || "India",
+      pincode: address.pincode,
+      isDefault: true
+    });
+  }
 
   await otpService.sendOtp(phone);
 
@@ -107,7 +123,9 @@ exports.verifyOtp = async (req, res) => {
 };
 
 exports.profile = async (req, res) => {
-  res.json(req.user);
+  const address = await Address.findOne({ user: req.user._id, isSelected: true })
+    || await Address.findOne({ user: req.user._id, isDefault: true });
+  res.json({ ...req.user.toObject(), address: address || null });
 };
 
 exports.forgotPassword = async (req, res) => {

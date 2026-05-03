@@ -7,6 +7,7 @@ router.get("/", auth, ctrl.getAddresses);
 router.post("/", auth, ctrl.addAddress);
 router.put("/:id", auth, ctrl.updateAddress);
 router.delete("/:id", auth, ctrl.deleteAddress);
+router.patch("/:id/select", auth, ctrl.selectAddress);
 router.get("/search", auth, ctrl.searchAddresses);
 router.post("/current-location", auth, ctrl.getCurrentLocation);
 
