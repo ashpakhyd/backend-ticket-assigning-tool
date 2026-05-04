@@ -17,6 +17,7 @@ exports.registerSchema = z.object({
   phone: z.string().min(10),
   email: z.string().email().optional(),
   password: z.string().min(6).optional(),
+  confirmPassword: z.string().optional(),
   role: z.enum(["ADMIN", "TECHNICIAN", "CUSTOMER"]),
   address: addressSchema,
   
