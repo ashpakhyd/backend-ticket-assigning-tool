@@ -1,5 +1,6 @@
 const Ticket = require("../models/Ticket");
 const User = require("../models/User");
+const Rating = require("../models/Rating");
 const { notifyUser } = require("../services/notification.service");
 
 // OTP generation utility
@@ -274,6 +275,8 @@ exports.getSingleTicket = async (req, res) => {
       return res.status(404).json({ message: "Ticket not found" });
     }
 
+    const rating = await Rating.findOne({ ticket: req.params.id }).select("rating feedback createdAt");
+
     // Access control
     if (req.user.role === "CUSTOMER" && String(ticket.customer._id) !== String(req.user._id)) {
       return res.status(403).json({ message: "Not your ticket" });
@@ -288,7 +291,7 @@ exports.getSingleTicket = async (req, res) => {
       const ticketObj = ticket.toObject();
       delete ticketObj.otp;
       delete ticketObj.finalOTP;
-      return res.json(ticketObj);
+      return res.json({ ...ticketObj, rating: rating || null });
     }
 
     // Customer OTP logic based on status
@@ -296,22 +299,19 @@ exports.getSingleTicket = async (req, res) => {
       const ticketObj = ticket.toObject();
       
       if (ticket.status === "ASSIGNED") {
-        // Show OTP for technician
         delete ticketObj.finalOTP;
       } else if (ticket.status === "IN_PROGRESS" || ticket.status === "COMPLETED") {
-        // Show finalOTP
         delete ticketObj.otp;
       } else {
-        // NEW/CLOSED - Hide both OTPs
         delete ticketObj.otp;
         delete ticketObj.finalOTP;
       }
       
-      return res.json(ticketObj);
+      return res.json({ ...ticketObj, rating: rating || null });
     }
 
     // Admin gets everything
-    res.json(ticket);
+    res.json({ ...ticket.toObject(), rating: rating || null });
   } catch (error) {
     console.error("Get single ticket error:", error);
     res.status(500).json({ message: "Failed to fetch ticket", error: error.message });
