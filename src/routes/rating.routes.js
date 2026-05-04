@@ -12,7 +12,7 @@ const P = require("../constants/permissions");
  * CUSTOMER → Rate technician (after ticket completed)
  */
 router.post(
-  "/tickets/:id/rate",
+  "/ratings/tickets/:id/rate",
   auth,
   permit(P.RATE_TECHNICIAN),
   ctrl.rateTicket
