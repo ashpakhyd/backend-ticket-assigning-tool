@@ -29,6 +29,7 @@ exports.register = async (req, res) => {
     userData.skills = skills;
     userData.serviceAreas = serviceAreas;
     userData.certification = certification;
+    userData.address = address;
     userData.idType = idType;
     userData.idNumber = idNumber;
     userData.profilePhoto = profilePhoto;
@@ -37,8 +38,8 @@ exports.register = async (req, res) => {
 
   const user = await User.create(userData);
 
-  // Save address for CUSTOMER or TECHNICIAN
-  if (address && (role === "CUSTOMER" || role === "TECHNICIAN")) {
+  // Save address for CUSTOMER only
+  if (address && role === "CUSTOMER") {
     await Address.create({
       user: user._id,
       house: address.house,
