@@ -1,16 +1,19 @@
 // src/validators/auth.validator.js
 const { z } = require("zod");
 
-const addressSchema = z.object({
-  house: z.string().optional(),
-  colony: z.string().optional(),
-  city: z.string().optional(),
-  area: z.string().optional(),
-  pincode: z.string().optional(),
-  district: z.string().optional(),
-  state: z.string().optional(),
-  country: z.string().optional()
-}).optional();
+const addressSchema = z.union([
+  z.string(),
+  z.object({
+    house: z.string().optional(),
+    colony: z.string().optional(),
+    city: z.string().optional(),
+    area: z.string().optional(),
+    pincode: z.string().optional(),
+    district: z.string().optional(),
+    state: z.string().optional(),
+    country: z.string().optional()
+  })
+]).optional();
 
 exports.registerSchema = z.object({
   name: z.string().min(2),
